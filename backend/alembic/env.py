@@ -17,7 +17,13 @@ target_metadata = Base.metadata
 
 
 def _url() -> str:
-    return config.get_main_option("sqlalchemy.url") or get_settings().database_url
+    url = get_settings().database_url or config.get_main_option("sqlalchemy.url")
+    if url.startswith("postgresql://"):
+        url = url.replace("postgresql://", "postgresql+psycopg://", 1)
+    elif url.startswith("postgres://"):
+        url = url.replace("postgres://", "postgresql+psycopg://", 1)
+    return url
+
 
 
 def run_migrations_offline() -> None:
